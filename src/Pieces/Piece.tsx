@@ -1,18 +1,26 @@
-interface Position {
+import Board from '../Board';
+
+export interface Position {
   x: number;
   y: number;
 }
 
+export enum Color {
+  WHITE = 'white',
+  BLACK = 'black'
+}
+
 abstract class ChessPiece {
   protected position: Position;
-  protected color: string;
+  protected color: Color;
 
-  constructor(color: string, initialX: number, initialY: number) {
+  constructor(color: Color, position: Position) {
     this.color = color;
-    this.position = { x: initialX, y: initialY}
+    this.position = position;
   }
 
-  abstract move(newPosition: Position): boolean;
+  abstract canMove(newPosition: Position, board: Board): boolean;
+  abstract movePiece(newPosition: Position, board: Board): Board;
 
   getCurrentPosition(): Position {
     return this.position;
@@ -22,9 +30,12 @@ abstract class ChessPiece {
     this.position = newPosition;
   }
 
-  getColor(): string {
+  getColor(): Color {
     return this.color;
   }
+
+  abstract getWhite(): string;
+  abstract getBlack(): string;
 }
 
 export default ChessPiece;
