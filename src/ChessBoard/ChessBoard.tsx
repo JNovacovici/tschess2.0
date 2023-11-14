@@ -5,6 +5,7 @@ import Pawn from "../Pieces/Pawn";
 import ChessPiece, { Color } from "../Pieces/Piece";
 import Queen from "../Pieces/Queen";
 import Rook from "../Pieces/Rook";
+import { Position } from "../ChessBoard/Postition";
 
 const horizontalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -17,56 +18,76 @@ const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
 //   enPassant?: boolean;
 // }
 
-class ChessBoard {
+abstract class ChessBoard {
   private board: (ChessPiece | null)[][];
 
   constructor() {
     this.board = [
       [
-        new Rook(Color.BLACK, { x: 0, y: 0 }),
-        new Knight(Color.BLACK, { x: 0, y: 1 }),
-        new Bishop(Color.BLACK, { x: 0, y: 2 }),
-        new Queen(Color.BLACK, { x: 0, y: 3 }),
-        new King(Color.BLACK, { x: 0, y: 4 }),
-        new Bishop(Color.BLACK, { x: 0, y: 5 }),
-        new Knight(Color.BLACK, { x: 0, y: 6 }),
-        new Rook(Color.BLACK, { x: 0, y: 7 }),
-
+        new Rook(Color.BLACK),
+        new Knight(Color.BLACK),
+        new Bishop(Color.BLACK),
+        new Queen(Color.BLACK),
+        new King(Color.BLACK),
+        new Bishop(Color.BLACK),
+        new Knight(Color.BLACK),
+        new Rook(Color.BLACK),
       ],
       [
-        new Pawn(Color.BLACK, { x: 1, y: 0 }),
-        new Pawn(Color.BLACK, { x: 1, y: 1 }),
-        new Pawn(Color.BLACK, { x: 1, y: 2 }),
-        new Pawn(Color.BLACK, { x: 1, y: 3 }),
-        new Pawn(Color.BLACK, { x: 1, y: 4 }),
-        new Pawn(Color.BLACK, { x: 1, y: 5 }),
-        new Pawn(Color.BLACK, { x: 1, y: 6 }),
-        new Pawn(Color.BLACK, { x: 1, y: 7 }),
+        new Pawn(Color.BLACK),
+        new Pawn(Color.BLACK),
+        new Pawn(Color.BLACK),
+        new Pawn(Color.BLACK),
+        new Pawn(Color.BLACK),
+        new Pawn(Color.BLACK),
+        new Pawn(Color.BLACK),
+        new Pawn(Color.BLACK),
       ],
       [null, null, null, null, null, null, null, null],
       [null, null, null, null, null, null, null, null],
       [null, null, null, null, null, null, null, null],
       [null, null, null, null, null, null, null, null],
       [
-        new Pawn(Color.WHITE, { x: 6, y: 0 }),
-        new Pawn(Color.WHITE, { x: 6, y: 1 }),
-        new Pawn(Color.WHITE, { x: 6, y: 2 }),
-        new Pawn(Color.WHITE, { x: 6, y: 3 }),
-        new Pawn(Color.WHITE, { x: 6, y: 4 }),
-        new Pawn(Color.WHITE, { x: 6, y: 5 }),
-        new Pawn(Color.WHITE, { x: 6, y: 6 }),
-        new Pawn(Color.WHITE, { x: 6, y: 7 }),
+        new Pawn(Color.WHITE),
+        new Pawn(Color.WHITE),
+        new Pawn(Color.WHITE),
+        new Pawn(Color.WHITE),
+        new Pawn(Color.WHITE),
+        new Pawn(Color.WHITE),
+        new Pawn(Color.WHITE),
+        new Pawn(Color.WHITE),
       ],
       [
-        new Rook(Color.WHITE, { x: 7, y: 0 }),
-        new Knight(Color.WHITE, { x: 7, y: 1 }),
-        new Bishop(Color.WHITE, { x: 7, y: 2 }),
-        new Queen(Color.WHITE, { x: 7, y: 3 }),
-        new King(Color.WHITE, { x: 7, y: 4 }),
-        new Bishop(Color.WHITE, { x: 7, y: 5 }),
-        new Knight(Color.WHITE, { x: 7, y: 6 }),
-        new Rook(Color.WHITE, { x: 7, y: 7 }),
+        new Rook(Color.WHITE),
+        new Knight(Color.WHITE),
+        new Bishop(Color.WHITE),
+        new Queen(Color.WHITE),
+        new King(Color.WHITE),
+        new Bishop(Color.WHITE),
+        new Knight(Color.WHITE),
+        new Rook(Color.WHITE),
       ]
-    ]
+    ];
+  }
+
+  getCurrentBoard(): (ChessPiece | null)[][] {
+    return this.board;
+  }
+
+  getPiece(pos: Position): (ChessPiece | null) {
+    return this.board[pos.y][pos.x];
+  }
+
+  movePiece(fromPosition: Position, newPosition: Position): boolean {
+    // Top left element represents 0,0
+    const piece = this.getPiece(fromPosition);
+    if (piece?.canMove(fromPosition, newPosition, this)) {
+      this.board[fromPosition.y][fromPosition.x] = null;
+      this.board[newPosition.y][newPosition.x] = piece;
+      return true;
+    }
+    return false;
   }
 }
+
+export default ChessBoard;

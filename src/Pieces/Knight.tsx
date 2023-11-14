@@ -1,17 +1,21 @@
-import Board from "../Board";
-import ChessPiece, { Position } from "./Piece";
+import Board from "../ChessBoard/ChessBoard";
+import ChessPiece from "./Piece";
+import { Position } from "../ChessBoard/Postition";
 
 class Knight extends ChessPiece {
-  canMove(newPosition: Position): boolean {
-    return true;
-  }
+  canMove(fromPosition: Position, newPosition: Position, board: Board): boolean {
+    const deltaX = Math.abs(newPosition.x - fromPosition.x);
+    const deltaY = Math.abs(newPosition.y - fromPosition.y);
 
-  movePiece(newPosition: Position, board: Board): Board {
-    if (this.canMove(newPosition)) {
-      this.setPosition(newPosition);
-      board.pieces
+    //Knight moves in "L" shape: either 2 horizontal then veritcal or 2 vertial and then horizontal
+    if ((deltaX === 1 && deltaY === 2) || (deltaX === 2 && deltaY === 1)) {
+      const pieceAtNewPosition = board.getPiece(newPosition);
+      if (pieceAtNewPosition === null || pieceAtNewPosition.getColor() !== this.color) {
+        return true;
+      }
     }
-    return board;
+
+    return false;
   }
 
   getWhite(): string {

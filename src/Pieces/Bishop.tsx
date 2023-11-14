@@ -1,17 +1,37 @@
-import Board from "../Board";
-import ChessPiece, { Position } from "./Piece";
+import Board from "../ChessBoard/ChessBoard";
+import ChessPiece from "./Piece";
+import { Position } from "../ChessBoard/Postition";
 
 class Bishop extends ChessPiece {
-  canMove(newPosition: Position): boolean {
-    return true;
-  }
+  canMove(fromPosition: Position, newPosition: Position, board: Board): boolean {
+    const deltaX = Math.abs(newPosition.x - fromPosition.x);
+    const deltaY = Math.abs(newPosition.y - fromPosition.y);
 
-  movePiece(newPosition: Position, board: Board): Board {
-    if (this.canMove(newPosition)) {
-      this.setPosition(newPosition);
-      board.pieces
+    //edgecase for bishop trying to be moved illegally
+    if (deltaX !== deltaY) {
+      return false;
     }
-    return board;
+
+    const xDirection = newPosition.x > fromPosition.x ? 1 : -1;
+    const yDirection = newPosition.y > fromPosition.y ? 1 : -1;
+    let x = fromPosition.x + xDirection;
+    let y = fromPosition.y + yDirection;
+
+    //Check for piece along the newPosition path
+    while (x !== newPosition.x) {
+      if (board.getPiece({ x, y }) !== null) {
+        return false; // piece blocking the path
+      }
+      x += xDirection;
+      y+= yDirection;
+    }
+
+    const pieceAtNewPosition = board.getPiece(newPosition);
+    if (pieceAtNewPosition === null || pieceAtNewPosition.getColor() !== this.color) {
+      return true;
+    }
+
+    return false;
   }
 
   getWhite(): string {
