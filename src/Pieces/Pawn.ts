@@ -11,7 +11,7 @@ class Pawn extends ChessPiece {
 
     // Starting position can move 2
     //old if statement: this.color === Color.BLACK && fromPosition.y === 1 && newPosition.x === fromPosition.x
-    if (deltaX === 0 && deltaY === 2 * direction && fromPosition.y === (this.color === Color.WHITE ? 1 : 6)) {
+    if (deltaX === 0 && deltaY === 2 * direction && fromPosition.y === (this.color === Color.WHITE ? 6 : 1)) {
       if (board.getPiece({ x: fromPosition.x, y: fromPosition.y + direction }) === null && board.getPiece(newPosition) === null) {
         return true;
       }
@@ -31,6 +31,18 @@ class Pawn extends ChessPiece {
     }
 
     return false;
+  }
+
+  validMoves(fromPosition: Position, board: Board): boolean[][] {
+    const validMoveArray = Array.from({ length: 8 }, () => Array(8).fill(false));
+
+    for (let x = 0; x < 8; x++) {
+      for (let y = 0; y < 8; y++) {
+        const newPosition: Position = { x, y };
+        validMoveArray[y][x] = this.canMove(fromPosition, newPosition, board)
+      }
+    }
+    return validMoveArray;
   }
 
   getWhite(): string {

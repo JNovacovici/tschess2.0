@@ -8,7 +8,7 @@ class Bishop extends ChessPiece {
     const deltaY = Math.abs(newPosition.y - fromPosition.y);
 
     //edgecase for bishop trying to be moved illegally
-    if (deltaX !== deltaY) {
+    if (deltaX !== deltaY || deltaX + deltaY === 0) {
       return false;
     }
 
@@ -32,6 +32,18 @@ class Bishop extends ChessPiece {
     }
 
     return false;
+  }
+
+  validMoves(fromPosition: Position, board: Board): boolean[][] {
+    const validMoveArray = Array.from({ length: 8 }, () => Array(8).fill(false));
+
+    for (let x = 0; x < 8; x++) {
+      for (let y = 0; y < 8; y++) {
+        const newPosition: Position = { x, y };
+        validMoveArray[y][x] = this.canMove(fromPosition, newPosition, board)
+      }
+    }
+    return validMoveArray;
   }
 
   getWhite(): string {

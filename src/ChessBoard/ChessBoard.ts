@@ -5,10 +5,10 @@ import Pawn from "../Pieces/Pawn";
 import ChessPiece, { Color } from "../Pieces/Piece";
 import Queen from "../Pieces/Queen";
 import Rook from "../Pieces/Rook";
-import { Position } from "../ChessBoard/Postition";
+import { Position } from "./Postition";
 
-const horizontalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
+// const horizontalAxis = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+// const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
 // export interface PieceObj {
 //   icon: Piece;
@@ -18,11 +18,19 @@ const verticalAxis = ['1', '2', '3', '4', '5', '6', '7', '8'];
 //   enPassant?: boolean;
 // }
 
-abstract class ChessBoard {
+class ChessBoard {
   private board: (ChessPiece | null)[][];
 
-  constructor() {
-    this.board = [
+  constructor(pieces: (ChessPiece | null)[][]) {
+    this.board = pieces;
+  }
+
+  clone(): ChessBoard {
+    return new ChessBoard(this.board);
+  }
+
+  static createNewBoard(): ChessBoard {
+    return new ChessBoard([
       [
         new Rook(Color.BLACK),
         new Knight(Color.BLACK),
@@ -67,7 +75,7 @@ abstract class ChessBoard {
         new Knight(Color.WHITE),
         new Rook(Color.WHITE),
       ]
-    ];
+    ]);
   }
 
   getCurrentBoard(): (ChessPiece | null)[][] {
@@ -82,11 +90,38 @@ abstract class ChessBoard {
     // Top left element represents 0,0
     const piece = this.getPiece(fromPosition);
     if (piece?.canMove(fromPosition, newPosition, this)) {
+      const oldBoard = this.board.map(row => [...row]);
+      // if (piece instanceof King && piece.canCastle(fromPosition, newPosition, this))
       this.board[fromPosition.y][fromPosition.x] = null;
       this.board[newPosition.y][newPosition.x] = piece;
+      if (this.isKingInCheck(piece.getColor())) {
+        //revert board to old state/piece location
+        this.board = oldBoard;
+        return false;
+      }
+      // piece.markAsMadeFirstMove();
       return true;
     }
     return false;
+  }
+
+  isKingInCheck(color: Color): boolean {
+    const kingPosition = this.findKingPosition(color);
+    if (!kingPosition) return false;
+    const king = this.getPiece(kingPosition) as King;
+    return king.isInCheck(kingPosition, this);
+  }
+
+  findKingPosition(color: Color): Position | null {
+    for (let i = 0; i < this.board.length; i++) {
+      for (let j = 0; j < this.board[i].length; j++) {
+        const piece = this.board[i][j];
+        if (piece instanceof King && piece.getColor() === color) {
+          return { x: j, y: i };
+        }
+      }
+    }
+    return null;
   }
 }
 

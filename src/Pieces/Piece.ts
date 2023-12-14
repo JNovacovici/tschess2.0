@@ -8,9 +8,10 @@ export enum Color {
 
 abstract class ChessPiece {
 
-  constructor(protected color: Color) {}
+  constructor(protected color: Color, protected hasMoved: boolean = false) {}
 
   abstract canMove(fromPosition: Position, newPosition: Position, board: Board): boolean;
+  abstract validMoves(fromPosition: Position, board: Board): boolean[][];
 
   abstract getWhite(): string;
   abstract getBlack(): string;
@@ -21,6 +22,14 @@ abstract class ChessPiece {
 
   getUnicode(): string {
     return this.color === Color.WHITE ? this.getWhite() : this.getBlack();
+  }
+
+  hasMadeFirstMove(): boolean {
+    return this.hasMoved;
+  }
+
+  markAsMadeFirstMove(): void {
+    this.hasMoved = true;
   }
 
 }

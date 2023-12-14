@@ -18,6 +18,18 @@ class Knight extends ChessPiece {
     return false;
   }
 
+  validMoves(fromPosition: Position, board: Board): boolean[][] {
+    const validMoveArray = Array.from({ length: 8 }, () => Array(8).fill(false));
+
+    for (let x = 0; x < 8; x++) {
+      for (let y = 0; y < 8; y++) {
+        const newPosition: Position = { x, y };
+        validMoveArray[y][x] = this.canMove(fromPosition, newPosition, board)
+      }
+    }
+    return validMoveArray;
+  }
+
   getWhite(): string {
     return '♘' //0x2658
   }

@@ -1,24 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import Board from './components/Board';
+import ChessBoard from './ChessBoard/ChessBoard';
+import { Color } from './Pieces/Piece';
 
 function App() {
+  const [chessBoard, setChessBoard] = useState(ChessBoard.createNewBoard());
+  const [currentPlayerColor, setCurrentPlayerColor] = useState(Color.WHITE);
+
+  const handleSetChessBoard = (newBoard: ChessBoard) => {
+    setChessBoard(newBoard);
+    setCurrentPlayerColor(currentPlayerColor === Color.WHITE ? Color.BLACK : Color.WHITE);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App bg-slate-500 h-screen">
+      <Board
+        board={chessBoard}
+        setChessBoard={handleSetChessBoard}
+        currentPlayerColor={currentPlayerColor} />
     </div>
   );
 }
