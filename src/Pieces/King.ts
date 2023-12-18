@@ -15,47 +15,49 @@ class King extends ChessPiece {
       return targetPiece === null || targetPiece.getColor() !== this.getColor();
     }
 
-    if (this.canCastle(fromPosition, newPosition, board)) {
+    if (this.canCastle(fromPosition, newPosition, board).canCastle) {
       return true;
     }
 
     return false;
   }
 
-   public canCastle(fromPosition: Position, newPosition: Position, board: Board): boolean {
+   public canCastle(fromPosition: Position, newPosition: Position, board: Board): { rook: Rook | null; rookPosition: Position; canCastle: Boolean} {
     if (this.hasMadeFirstMove()) {
-      return false;
+      return { rook: null, rookPosition: { x: -1, y: -1 }, canCastle: false };
     }
 
+    //King side Castling
     if (newPosition.x === fromPosition.x + 2 && newPosition.y === fromPosition.y) {
       for (let i = fromPosition.x + 1; i <= newPosition.x; i++) {
         if (board.getPiece({ x: i, y: fromPosition.y }) !== null) {
-          return false;
+          return { rook: null, rookPosition: { x: -1, y: -1 }, canCastle: false };
         }
       }
 
       const rookPosition = { x: fromPosition.x + 3, y: fromPosition.y };
       const rook = board.getPiece(rookPosition);
       if (rook instanceof Rook && !rook.hasMadeFirstMove()) {
-        return true;
+        return { rook, rookPosition, canCastle: true };
       }
     }
 
+    //Queen side Castling
     if (newPosition.x === fromPosition.x - 2 && newPosition.y === fromPosition.y) {
       for (let i = fromPosition.x - 1; i >= newPosition.x - 1; i--) {
         if (board.getPiece({ x: i, y: fromPosition.y }) !== null) {
-          return false;
+          return { rook: null, rookPosition: { x: -1, y: -1 }, canCastle: false };
         }
       }
 
-      const rookPosition = { x: fromPosition.y, y: 0 };
+      const rookPosition = { x: fromPosition.x - 4, y: fromPosition.y };
       const rook = board.getPiece(rookPosition);
       if (rook instanceof Rook && !rook.hasMadeFirstMove()) {
-        return true;
+        return { rook, rookPosition, canCastle: true };
       }
     }
 
-    return false;
+    return { rook: null, rookPosition: { x: -1, y: -1 }, canCastle: false };
   }
 
   validMoves(fromPosition: Position, board: Board): boolean[][] {
@@ -93,12 +95,6 @@ class King extends ChessPiece {
 
     return false; // King is not in check
   }
-
-  // movePiece(fromPosition: Position, newPosition: Position, board: Board): Board {
-  //   if (this.canMove(fromPosition, newPosition, board)) {
-  //   }
-  //   return board;
-  // }
 
   getWhite(): string {
     return '♔' //0x2654

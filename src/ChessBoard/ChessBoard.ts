@@ -89,9 +89,24 @@ class ChessBoard {
   movePiece(fromPosition: Position, newPosition: Position): boolean {
     // Top left element represents 0,0
     const piece = this.getPiece(fromPosition);
+    console.log(piece);
     if (piece?.canMove(fromPosition, newPosition, this)) {
       const oldBoard = this.board.map(row => [...row]);
-      // if (piece instanceof King && piece.canCastle(fromPosition, newPosition, this))
+      if (piece instanceof King) {
+        const { rook, rookPosition, canCastle } = piece.canCastle(fromPosition, newPosition, this);
+        if (canCastle) {
+          this.board[fromPosition.y][fromPosition.x] = null;
+          this.board[newPosition.y][newPosition.x] = piece;
+
+          this.board[rookPosition.y][rookPosition.x] = null;
+          const rookTo = { x: newPosition.x > fromPosition.x ? fromPosition.x + 1 : fromPosition.x - 1, y: fromPosition.y };
+          this.board[rookTo.y][rookTo.x] = rook;
+
+          piece.markAsMadeFirstMove();
+          rook?.markAsMadeFirstMove();
+          return true;
+        }
+      }
       this.board[fromPosition.y][fromPosition.x] = null;
       this.board[newPosition.y][newPosition.x] = piece;
       if (this.isKingInCheck(piece.getColor())) {
@@ -99,7 +114,7 @@ class ChessBoard {
         this.board = oldBoard;
         return false;
       }
-      // piece.markAsMadeFirstMove();
+      piece.markAsMadeFirstMove();
       return true;
     }
     return false;
